@@ -3,7 +3,7 @@
     "targetDate": "2025-12-26T00:00:00.000Z",
     "title": "kjsaodhlkjsah",
     "platform": "Reel",
-    "status": "Editing",
+    "status": "Scheduled",
     "id": "9api7k"
   },
   {
@@ -60,7 +60,7 @@
     "title": "prueba",
     "type": "",
     "platform": "YouTube",
-    "status": "Recording",
+    "status": "Scheduled",
     "isSponsored": false,
     "notes": "",
     "targetDate": "2026-04-10T00:00:00.000Z",

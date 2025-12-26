@@ -74,6 +74,11 @@ export function ContentTable() {
                         aValue = a.platform || "";
                         bValue = b.platform || "";
                         break;
+                    case "targetDate":
+                        // Numeric comparison for dates
+                        aValue = new Date(a.targetDate).getTime();
+                        bValue = new Date(b.targetDate).getTime();
+                        break;
                     default:
                         // Fallback
                         return 0;
@@ -219,7 +224,15 @@ export function ContentTable() {
                                 </div>
                             </th>
                             <th className="px-6 py-4 font-medium">Tipo</th>
-                            <th className="px-6 py-4 font-medium">Fecha</th>
+                            <th
+                                className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
+                                onClick={() => handleSort("targetDate")}
+                            >
+                                <div className="flex items-center gap-2">
+                                    Fecha
+                                    {getSortIcon("targetDate")}
+                                </div>
+                            </th>
                             <th className="px-6 py-4 font-medium">Patroc.</th>
                             <th className="px-6 py-4 font-medium text-right">Acciones</th>
                         </tr>
