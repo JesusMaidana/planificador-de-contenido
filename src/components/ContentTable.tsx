@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { api } from "@/lib/api";
 import { ContentItem } from "@/types";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -8,9 +8,18 @@ import { PlatformIcon } from "@/components/ui/PlatformIcon";
 import { ContentModal } from "@/components/ContentModal";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Edit2, Trash2, Plus, ExternalLink } from "lucide-react";
+import { Edit2, Trash2, Plus, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
+
+// Types for Sorting
+type SortKey = "title" | "status" | "platform" | "targetDate";
+type SortDirection = "asc" | "desc";
+
+interface SortConfig {
+    key: SortKey;
+    direction: SortDirection;
+}
 
 export function ContentTable() {
     const searchParams = useSearchParams();
@@ -20,10 +29,14 @@ export function ContentTable() {
     const [editingItem, setEditingItem] = useState<Partial<ContentItem> | undefined>(undefined);
     const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
 
+    // Sorting State
+    const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
+
     const fetchData = async () => {
         try {
             const data = await api.fetchContent();
-            setItems(data);
+            // Default sort by date (ascending) from API/Load
+            setItems(data.sort((a, b) => new Date(a.targetDate).getTime() - new Date(b.targetDate).getTime()));
         } catch (error) {
             console.error(error);
         } finally {
@@ -35,15 +48,59 @@ export function ContentTable() {
         fetchData();
     }, []);
 
-    // Scroll to first match and highlight
+    // Memoized Sorting Logic (Pure & Deterministic)
+    const sortedItems = useMemo(() => {
+        // Create a copy to avoid mutating original 'items'
+        const sortableItems = [...items];
+
+        if (sortConfig !== null) {
+            sortableItems.sort((a, b) => {
+                let aValue: string | number = "";
+                let bValue: string | number = "";
+
+                // Extraction logic based on key
+                switch (sortConfig.key) {
+                    case "title":
+                        aValue = a.title?.toLowerCase() || "";
+                        bValue = b.title?.toLowerCase() || "";
+                        break;
+                    case "status":
+                        // Grouping by status string
+                        aValue = a.status || "";
+                        bValue = b.status || "";
+                        break;
+                    case "platform":
+                        // Grouping by platform string
+                        aValue = a.platform || "";
+                        bValue = b.platform || "";
+                        break;
+                    default:
+                        // Fallback
+                        return 0;
+                }
+
+                if (aValue < bValue) {
+                    return sortConfig.direction === "asc" ? -1 : 1;
+                }
+                if (aValue > bValue) {
+                    return sortConfig.direction === "asc" ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+
+        return sortableItems;
+    }, [items, sortConfig]);
+
+    // Scroll and Highlight Logic (Search)
     useEffect(() => {
         const search = searchParams.get("q")?.toLowerCase();
-        if (!search || items.length === 0) {
+        if (!search || sortedItems.length === 0) {
             setHighlightedItemId(null);
             return;
         }
 
-        const firstMatch = items.find(item =>
+        const firstMatch = sortedItems.find(item =>
             (item.title?.toLowerCase() || "").includes(search) ||
             (item.platform?.toLowerCase() || "").includes(search) ||
             (item.type?.toLowerCase() || "").includes(search)
@@ -58,7 +115,34 @@ export function ContentTable() {
         } else {
             setHighlightedItemId(null);
         }
-    }, [searchParams, items]);
+    }, [searchParams, sortedItems]);
+
+    // Sort Handler
+    const handleSort = (key: SortKey) => {
+        setSortConfig((current) => {
+            if (current && current.key === key) {
+                // Toggle direction
+                return {
+                    key,
+                    direction: current.direction === "asc" ? "desc" : "asc",
+                };
+            }
+            // New key, default to asc
+            return { key, direction: "asc" };
+        });
+    };
+
+    // Helper to render sort icon
+    const getSortIcon = (key: SortKey) => {
+        if (sortConfig?.key === key) {
+            return sortConfig.direction === "asc" ? (
+                <ArrowUp className="h-4 w-4 text-indigo-400" />
+            ) : (
+                <ArrowDown className="h-4 w-4 text-indigo-400" />
+            );
+        }
+        return <ArrowUpDown className="h-4 w-4 text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity" />;
+    };
 
     const handleCreate = () => {
         setEditingItem(undefined);
@@ -107,9 +191,33 @@ export function ContentTable() {
                 <table className="w-full text-left text-sm text-zinc-400">
                     <thead className="bg-zinc-900/50 text-xs uppercase text-zinc-500 sticky top-0 z-10 backdrop-blur-sm">
                         <tr>
-                            <th className="px-6 py-4 font-medium">Título</th>
-                            <th className="px-6 py-4 font-medium">Plataforma</th>
-                            <th className="px-6 py-4 font-medium">Estado</th>
+                            <th
+                                className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
+                                onClick={() => handleSort("title")}
+                            >
+                                <div className="flex items-center gap-2">
+                                    Título
+                                    {getSortIcon("title")}
+                                </div>
+                            </th>
+                            <th
+                                className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
+                                onClick={() => handleSort("platform")}
+                            >
+                                <div className="flex items-center gap-2">
+                                    Plataforma
+                                    {getSortIcon("platform")}
+                                </div>
+                            </th>
+                            <th
+                                className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
+                                onClick={() => handleSort("status")}
+                            >
+                                <div className="flex items-center gap-2">
+                                    Estado
+                                    {getSortIcon("status")}
+                                </div>
+                            </th>
                             <th className="px-6 py-4 font-medium">Tipo</th>
                             <th className="px-6 py-4 font-medium">Fecha</th>
                             <th className="px-6 py-4 font-medium">Patroc.</th>
@@ -117,7 +225,7 @@ export function ContentTable() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-800">
-                        {items.map((item) => {
+                        {sortedItems.map((item) => {
                             const search = searchParams.get("q")?.toLowerCase();
                             const isMatch = search && (
                                 (item.title?.toLowerCase() || "").includes(search) ||
@@ -179,7 +287,7 @@ export function ContentTable() {
                                 </tr>
                             );
                         })}
-                        {items.length === 0 && (
+                        {sortedItems.length === 0 && (
                             <tr>
                                 <td colSpan={7} className="px-6 py-12 text-center text-zinc-500">
                                     No se encontró contenido. Crea uno para empezar.
