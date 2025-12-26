@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { LayoutDashboard, Kanban, Calendar, Settings, PlusCircle, Trash2 } from 'lucide-react';
 import { useContent } from '@/context/ContentContext';
+import { UserProfile } from './UserProfile';
 
 const navItems = [
     { name: 'Tabla', href: '/', icon: LayoutDashboard },
@@ -58,6 +59,9 @@ export function Sidebar() {
                     <span className="font-medium">Borrar Todo</span>
                 </button>
             </div>
+
+            <UserProfile />
+
         </div>
     );
 }
