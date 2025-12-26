@@ -3,7 +3,7 @@
     "id": "1",
     "title": "Welcome to Content OS",
     "platform": "YouTube",
-    "status": "Recording",
+    "status": "Scripting",
     "type": "Vlog",
     "targetDate": "2025-01-01T12:00:00.000Z",
     "isSponsored": false,
@@ -13,7 +13,7 @@
     "targetDate": "2025-12-26T00:00:00.000Z",
     "title": "kjsaodhlkjsah",
     "platform": "Reel",
-    "status": "Editing",
+    "status": "Recording",
     "id": "9api7k"
   },
   {
@@ -25,5 +25,125 @@
     "notes": "",
     "targetDate": "2025-12-26T00:00:00.000Z",
     "id": "wppps3"
+  },
+  {
+    "title": "asda",
+    "type": "",
+    "platform": "YouTube",
+    "status": "Scripting",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2026-04-01T00:00:00.000Z",
+    "id": "acir5d"
+  },
+  {
+    "title": "asdsad",
+    "type": "",
+    "platform": "YouTube",
+    "status": "Idea",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2026-04-01T00:00:00.000Z",
+    "id": "vd1leq"
+  },
+  {
+    "title": "asdads",
+    "type": "",
+    "platform": "YouTube",
+    "status": "Scripting",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2026-04-01T00:00:00.000Z",
+    "id": "8ifk5q"
+  },
+  {
+    "title": "asdasd",
+    "type": "",
+    "platform": "YouTube",
+    "status": "Idea",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2026-04-13T00:00:00.000Z",
+    "id": "lxzcjf"
+  },
+  {
+    "title": "prueba",
+    "type": "",
+    "platform": "YouTube",
+    "status": "Recording",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2026-04-10T00:00:00.000Z",
+    "id": "lnjrdb"
+  },
+  {
+    "title": "sadasd",
+    "type": "",
+    "platform": "YouTube",
+    "status": "Idea",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2025-12-27T03:00:00.000Z",
+    "id": "lvlb6i"
+  },
+  {
+    "title": "cumple viejita",
+    "type": "",
+    "platform": "YouTube",
+    "status": "Idea",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2026-01-06T03:00:00.000Z",
+    "id": "zw54gi"
+  },
+  {
+    "title": "asdas",
+    "type": "",
+    "platform": "YouTube",
+    "status": "Idea",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2025-12-26T03:00:00.000Z",
+    "id": "4fdmx"
+  },
+  {
+    "title": "asfasf",
+    "type": "",
+    "platform": "YouTube",
+    "status": "Idea",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2025-12-26T03:00:00.000Z",
+    "id": "o08p3o"
+  },
+  {
+    "title": "asfasfasf",
+    "type": "",
+    "platform": "YouTube",
+    "status": "Idea",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2025-12-26T03:00:00.000Z",
+    "id": "c4l30n"
+  },
+  {
+    "title": "sadsa",
+    "type": "",
+    "platform": "Podcast",
+    "status": "Published",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2025-12-26T03:00:00.000Z",
+    "id": "qt7sj"
+  },
+  {
+    "title": "asdas",
+    "type": "",
+    "platform": "YouTube",
+    "status": "Idea",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2025-12-01T03:00:00.000Z",
+    "id": "qffyto"
   }
 ]

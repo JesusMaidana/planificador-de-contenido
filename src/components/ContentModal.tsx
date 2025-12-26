@@ -54,9 +54,12 @@ export function ContentModal({ isOpen, onClose, initialData, onSave }: ContentMo
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        const [year, month, day] = formData.targetDate!.split('-').map(Number);
+        const localDate = new Date(year, month - 1, day);
+
         onSave({
             ...formData,
-            targetDate: new Date(formData.targetDate!).toISOString(),
+            targetDate: localDate.toISOString(),
         });
         onClose();
     };
