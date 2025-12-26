@@ -11,6 +11,7 @@ import { es } from "date-fns/locale";
 import { Edit2, Trash2, Plus, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
+import { useContent } from "@/context/ContentContext";
 
 // Types for Sorting
 type SortKey = "title" | "status" | "platform" | "targetDate";
@@ -23,8 +24,7 @@ interface SortConfig {
 
 export function ContentTable() {
     const searchParams = useSearchParams();
-    const [items, setItems] = useState<ContentItem[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const { items, isLoading, refreshContent } = useContent(); // Global State
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<Partial<ContentItem> | undefined>(undefined);
     const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
@@ -32,21 +32,7 @@ export function ContentTable() {
     // Sorting State
     const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
 
-    const fetchData = async () => {
-        try {
-            const data = await api.fetchContent();
-            // Default sort by date (ascending) from API/Load
-            setItems(data.sort((a, b) => new Date(a.targetDate).getTime() - new Date(b.targetDate).getTime()));
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
+    // Initial Fetch Removed (Controlled by Context)
 
     // Memoized Sorting Logic (Pure & Deterministic)
     const sortedItems = useMemo(() => {
@@ -162,7 +148,7 @@ export function ContentTable() {
     const handleDelete = async (id: string) => {
         if (confirm("¿Estás seguro de que quieres eliminar este item?")) {
             await api.deleteContent(id);
-            fetchData();
+            await refreshContent();
         }
     };
 
@@ -172,7 +158,7 @@ export function ContentTable() {
         } else {
             await api.createContent(item);
         }
-        fetchData();
+        await refreshContent();
     };
 
     if (isLoading) {

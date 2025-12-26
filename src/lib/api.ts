@@ -33,4 +33,11 @@ export const api = {
         });
         if (!res.ok) throw new Error('Failed to delete content');
     },
+
+    deleteAllContent: async (): Promise<void> => {
+        const res = await fetch('/api/content?id=all', {
+            method: 'DELETE',
+        });
+        if (!res.ok) throw new Error('Failed to delete all content');
+    },
 };

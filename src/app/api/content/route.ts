@@ -4,6 +4,7 @@ import path from 'path';
 import { ContentItem } from '@/types';
 
 const DB_PATH = path.join(process.cwd(), 'content-db.json');
+export const dynamic = 'force-dynamic';
 
 async function getDB(): Promise<ContentItem[]> {
     try {
@@ -57,6 +58,11 @@ export async function DELETE(request: Request) {
 
     if (!id) {
         return NextResponse.json({ error: 'ID required' }, { status: 400 });
+    }
+
+    if (id === 'all') {
+        await saveDB([]);
+        return NextResponse.json({ success: true });
     }
 
     const db = await getDB();

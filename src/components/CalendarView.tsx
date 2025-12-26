@@ -20,6 +20,7 @@ import { ContentItem } from "@/types";
 import { PlatformIcon } from "@/components/ui/PlatformIcon";
 import { ContentModal } from "./ContentModal";
 import { cn } from "@/lib/utils";
+import { useContent } from "@/context/ContentContext";
 
 /**
  * ARCHITECTURE EXPLANATION:
@@ -33,26 +34,13 @@ import { cn } from "@/lib/utils";
  */
 
 export function CalendarView() {
+    const { items, refreshContent } = useContent(); // Use global state
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [items, setItems] = useState<ContentItem[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<Partial<ContentItem> | undefined>(undefined);
 
     // State for the "More Events" Overlay
     const [expandedDay, setExpandedDay] = useState<Date | null>(null);
-
-    const fetchData = async () => {
-        try {
-            const data = await api.fetchContent();
-            setItems(data);
-        } catch (error) {
-            console.error("Failed to fetch items", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     // Date Logic
     const monthStart = startOfMonth(currentDate);
@@ -81,7 +69,7 @@ export function CalendarView() {
         } else {
             await api.createContent(item);
         }
-        await fetchData();
+        await refreshContent();
     };
 
     return (
