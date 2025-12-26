@@ -1,0 +1,29 @@
+[
+  {
+    "id": "1",
+    "title": "Welcome to Content OS",
+    "platform": "YouTube",
+    "status": "Recording",
+    "type": "Vlog",
+    "targetDate": "2025-01-01T12:00:00.000Z",
+    "isSponsored": false,
+    "notes": "Initial idea for the channel launch."
+  },
+  {
+    "targetDate": "2025-12-26T00:00:00.000Z",
+    "title": "kjsaodhlkjsah",
+    "platform": "Reel",
+    "status": "Editing",
+    "id": "9api7k"
+  },
+  {
+    "title": "sadsa",
+    "type": "",
+    "platform": "Podcast",
+    "status": "Idea",
+    "isSponsored": false,
+    "notes": "",
+    "targetDate": "2025-12-26T00:00:00.000Z",
+    "id": "wppps3"
+  }
+]
