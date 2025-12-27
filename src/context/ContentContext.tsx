@@ -46,6 +46,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
                 await api.createContent(item);
             }
             await refreshContent();
+            setIsModalOpen(false); // Close modal after successful save
         } catch (error) {
             console.error("Failed to save content", error);
         }
