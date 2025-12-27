@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import './globals.css';
 import { Sidebar } from '@/components/Sidebar';
 import { SearchBar } from '@/components/SearchBar';
@@ -22,7 +23,13 @@ export default function RootLayout({
           <main className="flex-1 overflow-auto bg-black p-8">
             <div className="mx-auto max-w-7xl h-full flex flex-col gap-6">
               <div className="flex justify-center">
-                <SearchBar />
+                <Suspense fallback={
+                  <div className="relative w-full max-w-md">
+                    <div className="block w-full rounded-lg border border-zinc-800 bg-zinc-900/50 py-2 pl-10 pr-3 h-[38px]" />
+                  </div>
+                }>
+                  <SearchBar />
+                </Suspense>
               </div>
               <div className="flex-1 overflow-hidden">
                 {children}
