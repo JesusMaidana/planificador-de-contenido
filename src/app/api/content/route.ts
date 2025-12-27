@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 import { ContentItem } from '@/types';
+import { createClient } from '@/lib/supabase/server';
 
 const DB_PATH = path.join(process.cwd(), 'content-db.json');
 export const dynamic = 'force-dynamic';
@@ -19,12 +20,42 @@ async function saveDB(data: ContentItem[]) {
     await fs.writeFile(DB_PATH, JSON.stringify(data, null, 2));
 }
 
+// Helper to check authentication
+async function checkAuth() {
+    const supabase = await createClient();
+    const { data: { user }, error } = await supabase.auth.getUser();
+
+    if (error || !user) {
+        return { authenticated: false, user: null };
+    }
+
+    return { authenticated: true, user };
+}
+
 export async function GET() {
+    const { authenticated } = await checkAuth();
+
+    if (!authenticated) {
+        return NextResponse.json(
+            { error: 'Unauthorized. Please log in.' },
+            { status: 401 }
+        );
+    }
+
     const data = await getDB();
     return NextResponse.json(data);
 }
 
 export async function POST(request: Request) {
+    const { authenticated } = await checkAuth();
+
+    if (!authenticated) {
+        return NextResponse.json(
+            { error: 'Unauthorized. Please log in to create content.' },
+            { status: 401 }
+        );
+    }
+
     const newItem = await request.json();
     const db = await getDB();
     // Simple ID generation if not provided
@@ -38,6 +69,15 @@ export async function POST(request: Request) {
 
 // PUT for updating an item
 export async function PUT(request: Request) {
+    const { authenticated } = await checkAuth();
+
+    if (!authenticated) {
+        return NextResponse.json(
+            { error: 'Unauthorized. Please log in to update content.' },
+            { status: 401 }
+        );
+    }
+
     const updatedItem = await request.json();
     const db = await getDB();
     const index = db.findIndex((item) => item.id === updatedItem.id);
@@ -53,6 +93,15 @@ export async function PUT(request: Request) {
 
 // DELETE for removing an item (using search params)
 export async function DELETE(request: Request) {
+    const { authenticated } = await checkAuth();
+
+    if (!authenticated) {
+        return NextResponse.json(
+            { error: 'Unauthorized. Please log in to delete content.' },
+            { status: 401 }
+        );
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
