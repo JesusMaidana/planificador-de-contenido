@@ -26,7 +26,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { PlatformIcon } from "@/components/ui/PlatformIcon";
 import { ContentModal } from "@/components/ContentModal";
 import { Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, parseSafeDate } from "@/lib/utils";
 
 const STATUSES: Status[] = ["Idea", "Scripting", "Recording", "Editing", "Scheduled", "Published"];
 
@@ -61,7 +61,7 @@ function KanbanCard({ item, onClick }: { item: ContentItem; onClick: () => void 
             <h4 className="font-medium text-white line-clamp-2 mb-2">{item.title}</h4>
             <div className="flex items-center justify-between text-xs text-zinc-500">
                 <span>{item.type}</span>
-                <span>{new Date(item.targetDate).toLocaleDateString()}</span>
+                <span>{parseSafeDate(item.targetDate).toLocaleDateString()}</span>
             </div>
         </div>
     );

@@ -19,7 +19,7 @@ import { api } from "@/lib/api";
 import { ContentItem } from "@/types";
 import { PlatformIcon } from "@/components/ui/PlatformIcon";
 import { ContentModal } from "./ContentModal";
-import { cn } from "@/lib/utils";
+import { cn, parseSafeDate } from "@/lib/utils";
 import { useContent } from "@/context/ContentContext";
 
 /**
@@ -111,7 +111,7 @@ export function CalendarView() {
             {/* --- Mobile List View (< 1024px) --- */}
             <div className="lg:hidden flex-1 overflow-y-auto space-y-6 pb-20">
                 {calendarDays.filter(day => isSameMonth(day, monthStart)).map(day => {
-                    const dayItems = items.filter(item => isSameDay(new Date(item.targetDate), day));
+                    const dayItems = items.filter(item => isSameDay(parseSafeDate(item.targetDate), day));
                     if (dayItems.length === 0) return null; // Skip empty days in list view logic (optional)
 
                     const isToday = isSameDay(day, new Date());
@@ -164,7 +164,7 @@ export function CalendarView() {
                 {/* Grid Body */}
                 <div className="col-span-7 grid grid-cols-7 auto-rows-fr bg-zinc-950">
                     {calendarDays.map(day => {
-                        const dayItems = items.filter(item => isSameDay(new Date(item.targetDate), day));
+                        const dayItems = items.filter(item => isSameDay(parseSafeDate(item.targetDate), day));
                         const isCurrentMonth = isSameMonth(day, monthStart);
                         const isToday = isSameDay(day, new Date());
 
@@ -257,7 +257,7 @@ export function CalendarView() {
                         {/* Overlay Content (Scrollable) */}
                         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2 custom-scrollbar">
                             {items
-                                .filter(item => isSameDay(new Date(item.targetDate), expandedDay))
+                                .filter(item => isSameDay(parseSafeDate(item.targetDate), expandedDay))
                                 .map(item => (
                                     <button
                                         key={item.id}
@@ -275,7 +275,7 @@ export function CalendarView() {
                                     </button>
                                 ))
                             }
-                            {items.filter(item => isSameDay(new Date(item.targetDate), expandedDay)).length === 0 && (
+                            {items.filter(item => isSameDay(parseSafeDate(item.targetDate), expandedDay)).length === 0 && (
                                 <p className="text-center text-sm text-zinc-500 py-4">No hay eventos</p>
                             )}
 

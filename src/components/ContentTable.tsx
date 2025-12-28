@@ -9,7 +9,7 @@ import { ContentModal } from "@/components/ContentModal";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Edit2, Trash2, Plus, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, parseSafeDate } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { useContent } from "@/context/ContentContext";
 
@@ -62,8 +62,8 @@ export function ContentTable() {
                         break;
                     case "targetDate":
                         // Numeric comparison for dates
-                        aValue = new Date(a.targetDate).getTime();
-                        bValue = new Date(b.targetDate).getTime();
+                        aValue = parseSafeDate(a.targetDate).getTime();
+                        bValue = parseSafeDate(b.targetDate).getTime();
                         break;
                     default:
                         // Fallback
@@ -257,7 +257,7 @@ export function ContentTable() {
                                         <StatusBadge status={item.status} />
                                     </td>
                                     <td className="px-6 py-4">{item.type}</td>
-                                    <td className="px-6 py-4 capitalize">{format(new Date(item.targetDate), 'MMM d, yyyy', { locale: es })}</td>
+                                    <td className="px-6 py-4 capitalize">{format(parseSafeDate(item.targetDate), 'MMM d, yyyy', { locale: es })}</td>
                                     <td className="px-6 py-4">
                                         {item.isSponsored ? (
                                             <span className="inline-flex rounded-full bg-emerald-950/30 px-2 py-1 text-xs font-medium text-emerald-400 border border-emerald-900/50">

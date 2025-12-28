@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { ContentItem, Platform, Status } from "@/types";
 import { STATUS_LABELS } from "@/lib/constants";
+import { parseSafeDate } from "@/lib/utils";
 
 interface ContentModalProps {
     isOpen: boolean;
@@ -35,7 +36,7 @@ export function ContentModal({ isOpen, onClose, initialData, onSave }: ContentMo
                 status: initialData.status || "Idea",
                 isSponsored: initialData.isSponsored || false,
                 notes: initialData.notes || "",
-                targetDate: initialData.targetDate ? initialData.targetDate.split("T")[0] : new Date().toISOString().split("T")[0]
+                targetDate: parseSafeDate(initialData.targetDate).toISOString().split("T")[0]
             });
         } else {
             setFormData({
