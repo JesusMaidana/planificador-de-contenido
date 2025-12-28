@@ -38,46 +38,12 @@ export async function GET() {
     }
 }
 
-// POST: Create a new content item
-export async function POST(request: Request) {
-    try {
-        const supabase = await createClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-        if (authError || !user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        const body = await request.json();
-
-        // Explicitly inject user_id to satisfy RLS (auth.uid() = user_id)
-        // We do NOT trust the frontend for this field.
-        const { data, error } = await supabase
-            .from('content')
-            .insert([{
-                ...body,
-                user_id: user.id
-            }])
-            .select()
-            .single();
-
-        if (error) {
-            console.error('[API POST] Supabase Error:', error);
-            return NextResponse.json({
-                supabaseError: error,
-                userId: user.id,
-                payload: body
-            }, { status: 400 });
-        }
-
-        return NextResponse.json(data);
-    } catch (e: any) {
-        console.error('[API POST] Unexpected Error:', e);
-        return NextResponse.json({
-            error: 'Internal Server Error',
-            details: e?.message || e
-        }, { status: 500 });
-    }
+// POST: Create a new content item (TEMPORAL DEBUG)
+export async function POST() {
+    return new Response(
+        JSON.stringify({ debug: 'POST ROUTE HIT' }),
+        { status: 418 }
+    )
 }
 
 // PUT: Update an existing content item
