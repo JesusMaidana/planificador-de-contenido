@@ -62,11 +62,9 @@ export async function POST(request: Request) {
         console.log('[API POST] Inserting with payload:', JSON.stringify(finalPayload, null, 2));
         console.log('[API POST] User ID:', user.id);
 
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from('content')
-            .insert([finalPayload])
-            .select()
-            .single();
+            .insert([finalPayload]);
 
         if (error) {
             console.error('[API POST] Supabase Error Details:', {
@@ -85,11 +83,11 @@ export async function POST(request: Request) {
                 },
                 userId: user.id,
                 payload: finalPayload,
-                help: "Verify that 'user_id' column exists and RLS policies allow INSERT + SELECT."
+                help: "Verify that 'user_id' column exists and RLS policies allow INSERT."
             }, { status: 400 });
         }
 
-        return NextResponse.json(data);
+        return NextResponse.json({ success: true });
     } catch (e: any) {
         console.error('[API POST] Unexpected Error:', e);
         return NextResponse.json({
