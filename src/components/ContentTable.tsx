@@ -211,7 +211,7 @@ export function ContentTable() {
                             </th>
                             <th className="hidden md:table-cell px-4 sm:px-6 py-4 font-medium">Tipo</th>
                             <th
-                                className="hidden lg:table-cell px-4 sm:px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
+                                className="hidden md:table-cell px-4 sm:px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
                                 onClick={() => handleSort("targetDate")}
                             >
                                 <div className="flex items-center gap-2">
@@ -245,9 +245,9 @@ export function ContentTable() {
                                         <div className="flex flex-col">
                                             <span className={cn("truncate", isMatch ? "text-indigo-200" : "")}>{item.title}</span>
                                             {item.notes && <span className="text-[10px] sm:text-xs text-zinc-500 truncate">{item.notes}</span>}
-                                            <div className="flex items-center gap-2 mt-1 lg:hidden">
+                                            <div className="flex items-center gap-2 mt-1 md:hidden">
                                                 <span className="text-[10px] text-zinc-500 capitalize">{format(parseSafeDate(item.targetDate), 'MMM d, yyyy', { locale: es })}</span>
-                                                <span className="md:hidden text-[10px] text-zinc-600 bg-zinc-900 px-1 rounded">{item.type}</span>
+                                                <span className="text-[10px] text-zinc-600 bg-zinc-900 px-1 rounded">{item.type}</span>
                                             </div>
                                         </div>
                                     </td>
@@ -261,7 +261,7 @@ export function ContentTable() {
                                         <StatusBadge status={item.status} />
                                     </td>
                                     <td className="hidden md:table-cell px-4 sm:px-6 py-4">{item.type}</td>
-                                    <td className="hidden lg:table-cell px-4 sm:px-6 py-4 capitalize">{format(parseSafeDate(item.targetDate), 'MMM d, yyyy', { locale: es })}</td>
+                                    <td className="hidden md:table-cell px-4 sm:px-6 py-4 capitalize">{format(parseSafeDate(item.targetDate), 'MMM d, yyyy', { locale: es })}</td>
                                     <td className="hidden xl:table-cell px-4 sm:px-6 py-4">
                                         {item.isSponsored ? (
                                             <span className="inline-flex rounded-full bg-emerald-950/30 px-2 py-1 text-xs font-medium text-emerald-400 border border-emerald-900/50 whitespace-nowrap">

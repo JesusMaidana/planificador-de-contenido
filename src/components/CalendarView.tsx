@@ -107,8 +107,8 @@ export function CalendarView() {
                 </div>
             </div>
 
-            {/* --- Mobile List View (< 1024px) --- */}
-            <div className="lg:hidden flex-1 overflow-y-auto space-y-6 pb-20">
+            {/* --- Mobile List View (< 768px) --- */}
+            <div className="md:hidden flex-1 overflow-y-auto space-y-6 pb-20">
                 {calendarDays.filter(day => isSameMonth(day, monthStart)).map(day => {
                     const dayItems = items.filter(item => isSameDay(parseSafeDate(item.targetDate), day));
                     if (dayItems.length === 0) return null; // Skip empty days in list view logic (optional)
@@ -148,8 +148,8 @@ export function CalendarView() {
                 })}
             </div>
 
-            {/* --- Desktop Grid View (>= 1024px) --- */}
-            <div className="hidden lg:grid grid-cols-7 grid-rows-[auto_1fr] flex-1 border border-zinc-800 rounded-xl bg-zinc-950 overflow-hidden shadow-sm">
+            {/* --- Desktop Grid View (>= 768px) --- */}
+            <div className="hidden md:grid grid-cols-7 grid-rows-[auto_1fr] flex-1 border border-zinc-800 rounded-xl bg-zinc-950 overflow-hidden shadow-sm">
 
                 {/* Grid Header */}
                 <div className="col-span-7 grid grid-cols-7 border-b border-zinc-800 bg-zinc-900/50">

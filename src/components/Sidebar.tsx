@@ -33,13 +33,13 @@ export function Sidebar() {
             {/* Mobile Overlay */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-all duration-300"
+                    className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden transition-all duration-300"
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
 
             <div className={cn(
-                "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-zinc-800 bg-zinc-950 p-4 transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0",
+                "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-zinc-800 bg-zinc-950 p-4 transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
                 isSidebarOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 <div className="flex items-center justify-between px-2 py-4">
@@ -49,7 +49,7 @@ export function Sidebar() {
                     </div>
                     <button
                         onClick={() => setSidebarOpen(false)}
-                        className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-900 hover:text-white lg:hidden"
+                        className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-900 hover:text-white md:hidden"
                     >
                         <X className="h-5 w-5" />
                     </button>
