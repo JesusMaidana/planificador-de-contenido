@@ -2,7 +2,9 @@ import { ContentItem } from '@/types';
 
 export const api = {
     fetchContent: async (): Promise<ContentItem[]> => {
-        const res = await fetch('/api/content');
+        const res = await fetch('/api/content', {
+            credentials: 'include',
+        });
         if (!res.ok) throw new Error('Failed to fetch content');
         return res.json();
     },
@@ -12,6 +14,7 @@ export const api = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(item),
+            credentials: 'include',
         });
         if (!res.ok) throw new Error('Failed to create content');
         return res.json();
@@ -22,6 +25,7 @@ export const api = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(item),
+            credentials: 'include',
         });
         if (!res.ok) throw new Error('Failed to update content');
         return res.json();
@@ -30,6 +34,7 @@ export const api = {
     deleteContent: async (id: string): Promise<void> => {
         const res = await fetch(`/api/content?id=${id}`, {
             method: 'DELETE',
+            credentials: 'include',
         });
         if (!res.ok) throw new Error('Failed to delete content');
     },
@@ -37,6 +42,7 @@ export const api = {
     deleteAllContent: async (): Promise<void> => {
         const res = await fetch('/api/content?id=all', {
             method: 'DELETE',
+            credentials: 'include',
         });
         if (!res.ok) throw new Error('Failed to delete all content');
     },
