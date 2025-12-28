@@ -21,10 +21,11 @@ export async function GET() {
         }
 
         // Fetch items - RLS handles the filters (user sees only their rows)
+        // Note: Using target_date (snake_case) to match Postgres standards
         const { data, error } = await supabase
             .from('content')
             .select('*')
-            .order('targetDate', { ascending: false });
+            .order('target_date', { ascending: false });
 
         if (error) {
             console.error('[API GET] Supabase Error:', error.message);
@@ -50,12 +51,14 @@ export async function POST(request: Request) {
 
         const body = await request.json();
 
-        // Sanitize body: remove id if it's not a valid UUID format 
-        // to avoid "invalid input syntax for type uuid" errors.
-        // If the frontend sends a string like 'abc123', Supabase will reject it.
-        const { id, ...itemToInsert } = body;
+        // Map camelCase (Frontend) to snake_case (Postgres/Supabase)
+        // and sanitize payload to avoid schema mismatch errors.
+        const { id, targetDate, isSponsored, ...others } = body;
+
         const finalPayload = {
-            ...itemToInsert,
+            ...others,
+            target_date: targetDate,
+            is_sponsored: isSponsored,
             user_id: user.id
         };
 
@@ -108,24 +111,37 @@ export async function PUT(request: Request) {
         }
 
         const body = await request.json();
-        const { id, user_id: _body_user_id, ...updateData } = body;
+        const { id, user_id: _body_user_id, targetDate, isSponsored, ...updateData } = body;
 
         if (!id) {
             return NextResponse.json({ error: 'ID required' }, { status: 400 });
         }
 
+        // Map camelCase to snake_case
+        const finalUpdateData = {
+            ...updateData,
+            ...(targetDate !== undefined && { target_date: targetDate }),
+            ...(isSponsored !== undefined && { is_sponsored: isSponsored })
+        };
+
         // RLS will block if the user doesn't own the row or isn't an admin
-        // But we add .eq('user_id', user.id) for extra safety if not admin
         const { data, error } = await supabase
             .from('content')
-            .update(updateData)
+            .update(finalUpdateData)
             .eq('id', id)
             .select()
             .single();
 
         if (error) {
             console.error('[API PUT] Supabase Error:', error.message);
-            return NextResponse.json({ error: error.message }, { status: 400 });
+            return NextResponse.json({
+                supabaseError: {
+                    code: error.code,
+                    message: error.message,
+                    details: error.details,
+                    hint: error.hint
+                }
+            }, { status: 400 });
         }
 
         return NextResponse.json(data);
@@ -172,7 +188,14 @@ export async function DELETE(request: Request) {
 
         if (error) {
             console.error('[API DELETE] Supabase Error:', error.message);
-            return NextResponse.json({ error: error.message }, { status: 400 });
+            return NextResponse.json({
+                supabaseError: {
+                    code: error.code,
+                    message: error.message,
+                    details: error.details,
+                    hint: error.hint
+                }
+            }, { status: 400 });
         }
 
         return NextResponse.json({ success: true });
