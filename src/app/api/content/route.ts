@@ -50,23 +50,42 @@ export async function POST(request: Request) {
 
         const body = await request.json();
 
-        // Explicitly inject user_id to satisfy RLS (auth.uid() = user_id)
-        // We do NOT trust the frontend for this field.
+        // Sanitize body: remove id if it's not a valid UUID format 
+        // to avoid "invalid input syntax for type uuid" errors.
+        // If the frontend sends a string like 'abc123', Supabase will reject it.
+        const { id, ...itemToInsert } = body;
+        const finalPayload = {
+            ...itemToInsert,
+            user_id: user.id
+        };
+
+        console.log('[API POST] Inserting with payload:', JSON.stringify(finalPayload, null, 2));
+        console.log('[API POST] User ID:', user.id);
+
         const { data, error } = await supabase
             .from('content')
-            .insert([{
-                ...body,
-                user_id: user.id
-            }])
+            .insert([finalPayload])
             .select()
             .single();
 
         if (error) {
-            console.error('[API POST] Supabase Error:', error);
+            console.error('[API POST] Supabase Error Details:', {
+                code: error.code,
+                message: error.message,
+                details: error.details,
+                hint: error.hint
+            });
+
             return NextResponse.json({
-                supabaseError: error,
+                supabaseError: {
+                    code: error.code,
+                    message: error.message,
+                    details: error.details,
+                    hint: error.hint
+                },
                 userId: user.id,
-                payload: body
+                payload: finalPayload,
+                help: "Verify that 'user_id' column exists and RLS policies allow INSERT + SELECT."
             }, { status: 400 });
         }
 
