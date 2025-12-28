@@ -167,23 +167,23 @@ export function ContentTable() {
 
     return (
         <div className="flex flex-col h-full overflow-hidden">
-            <div className="mb-6 flex items-center justify-between shrink-0">
-                <h1 className="text-3xl font-bold text-white">Todo el Contenido</h1>
+            <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between shrink-0 gap-4">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">Todo el Contenido</h1>
                 <button
                     onClick={handleCreate}
-                    className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                    className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 active:scale-95 transition-all"
                 >
                     <Plus className="h-4 w-4" />
                     Nuevo Contenido
                 </button>
             </div>
 
-            <div className="flex-1 overflow-auto rounded-xl border border-zinc-800 bg-zinc-950 shadow-sm relative">
-                <table className="w-full text-left text-sm text-zinc-400">
+            <div className="flex-1 overflow-auto rounded-xl border border-zinc-800 bg-zinc-950 shadow-sm relative custom-scrollbar">
+                <table className="w-full text-left text-sm text-zinc-400 min-w-[600px] lg:min-w-0">
                     <thead className="bg-zinc-900/50 text-xs uppercase text-zinc-500 sticky top-0 z-10 backdrop-blur-sm">
                         <tr>
                             <th
-                                className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
+                                className="px-4 sm:px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
                                 onClick={() => handleSort("title")}
                             >
                                 <div className="flex items-center gap-2">
@@ -192,7 +192,7 @@ export function ContentTable() {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
+                                className="px-4 sm:px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
                                 onClick={() => handleSort("platform")}
                             >
                                 <div className="flex items-center gap-2">
@@ -201,7 +201,7 @@ export function ContentTable() {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
+                                className="px-4 sm:px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
                                 onClick={() => handleSort("status")}
                             >
                                 <div className="flex items-center gap-2">
@@ -209,9 +209,9 @@ export function ContentTable() {
                                     {getSortIcon("status")}
                                 </div>
                             </th>
-                            <th className="px-6 py-4 font-medium">Tipo</th>
+                            <th className="hidden md:table-cell px-4 sm:px-6 py-4 font-medium">Tipo</th>
                             <th
-                                className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
+                                className="hidden lg:table-cell px-4 sm:px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
                                 onClick={() => handleSort("targetDate")}
                             >
                                 <div className="flex items-center gap-2">
@@ -219,8 +219,8 @@ export function ContentTable() {
                                     {getSortIcon("targetDate")}
                                 </div>
                             </th>
-                            <th className="px-6 py-4 font-medium">Patroc.</th>
-                            <th className="px-6 py-4 font-medium text-right">Acciones</th>
+                            <th className="hidden xl:table-cell px-4 sm:px-6 py-4 font-medium">Patroc.</th>
+                            <th className="px-4 sm:px-6 py-4 font-medium text-right sticky right-0 bg-zinc-900/50 backdrop-blur-sm shadow-[-4px_0_12px_rgba(0,0,0,0.5)]">Acciones</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-800">
@@ -241,43 +241,47 @@ export function ContentTable() {
                                         isMatch ? "bg-indigo-950/40" : "hover:bg-zinc-900/30"
                                     )}
                                 >
-                                    <td className="px-6 py-4 font-medium text-white">
+                                    <td className="px-4 sm:px-6 py-4 font-medium text-white max-w-[200px] sm:max-w-xs">
                                         <div className="flex flex-col">
-                                            <span className={isMatch ? "text-indigo-200" : ""}>{item.title}</span>
-                                            {item.notes && <span className="text-xs text-zinc-500 truncate max-w-[200px]">{item.notes}</span>}
+                                            <span className={cn("truncate", isMatch ? "text-indigo-200" : "")}>{item.title}</span>
+                                            {item.notes && <span className="text-[10px] sm:text-xs text-zinc-500 truncate">{item.notes}</span>}
+                                            <div className="flex items-center gap-2 mt-1 lg:hidden">
+                                                <span className="text-[10px] text-zinc-500 capitalize">{format(parseSafeDate(item.targetDate), 'MMM d, yyyy', { locale: es })}</span>
+                                                <span className="md:hidden text-[10px] text-zinc-600 bg-zinc-900 px-1 rounded">{item.type}</span>
+                                            </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 sm:px-6 py-4">
                                         <div className="flex items-center gap-2">
-                                            <PlatformIcon platform={item.platform} className="h-4 w-4" />
-                                            <span>{item.platform}</span>
+                                            <PlatformIcon platform={item.platform} className="h-4 w-4 shrink-0" />
+                                            <span className="hidden sm:inline">{item.platform}</span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 sm:px-6 py-4">
                                         <StatusBadge status={item.status} />
                                     </td>
-                                    <td className="px-6 py-4">{item.type}</td>
-                                    <td className="px-6 py-4 capitalize">{format(parseSafeDate(item.targetDate), 'MMM d, yyyy', { locale: es })}</td>
-                                    <td className="px-6 py-4">
+                                    <td className="hidden md:table-cell px-4 sm:px-6 py-4">{item.type}</td>
+                                    <td className="hidden lg:table-cell px-4 sm:px-6 py-4 capitalize">{format(parseSafeDate(item.targetDate), 'MMM d, yyyy', { locale: es })}</td>
+                                    <td className="hidden xl:table-cell px-4 sm:px-6 py-4">
                                         {item.isSponsored ? (
-                                            <span className="inline-flex rounded-full bg-emerald-950/30 px-2 py-1 text-xs font-medium text-emerald-400 border border-emerald-900/50">
+                                            <span className="inline-flex rounded-full bg-emerald-950/30 px-2 py-1 text-xs font-medium text-emerald-400 border border-emerald-900/50 whitespace-nowrap">
                                                 $ Patroc.
                                             </span>
                                         ) : (
                                             <span className="text-zinc-600">-</span>
                                         )}
                                     </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+                                    <td className="px-4 sm:px-6 py-4 text-right sticky right-0 bg-transparent group-hover:bg-zinc-900/30 backdrop-blur-sm">
+                                        <div className="flex justify-end gap-1 sm:gap-2 lg:opacity-0 transition-opacity lg:group-hover:opacity-100">
                                             <button
                                                 onClick={() => handleEdit(item)}
-                                                className="rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                                                className="rounded p-1.5 sm:p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white outline-none focus:ring-2 focus:ring-indigo-500"
                                             >
                                                 <Edit2 className="h-4 w-4" />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(item.id)}
-                                                className="rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-red-400"
+                                                className="rounded p-1.5 sm:p-1 text-zinc-400 hover:bg-zinc-800 hover:text-red-400 outline-none focus:ring-2 focus:ring-red-500"
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                             </button>

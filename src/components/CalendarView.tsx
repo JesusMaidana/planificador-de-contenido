@@ -75,18 +75,18 @@ export function CalendarView() {
     return (
         <div className="flex flex-col h-full bg-black text-white">
             {/* --- Header --- */}
-            <div className="flex flex-col sm:flex-row items-center justify-between mb-6 shrink-0 gap-4">
-                <h1 className="text-3xl font-bold">Calendario</h1>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 shrink-0 gap-4">
+                <h1 className="text-2xl sm:text-3xl font-bold">Calendario</h1>
 
-                <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                    <div className="flex items-center gap-1 bg-zinc-900 border border-zinc-800 rounded-lg p-1">
+                <div className="flex flex-col xs:flex-row items-center gap-3 w-full sm:w-auto">
+                    <div className="flex flex-1 sm:flex-none items-center gap-1 bg-zinc-900 border border-zinc-800 rounded-lg p-1 w-full xs:w-auto">
                         <button
                             onClick={() => setCurrentDate(subMonths(currentDate, 1))}
                             className="p-1.5 hover:bg-zinc-800 rounded text-zinc-400 hover:text-white transition-colors"
                         >
                             <ChevronLeft className="w-5 h-5" />
                         </button>
-                        <span className="text-sm font-medium capitalize min-w-[140px] text-center">
+                        <span className="text-sm font-medium capitalize flex-1 xs:min-w-[140px] text-center">
                             {format(currentDate, "MMMM yyyy", { locale: es })}
                         </span>
                         <button
@@ -99,11 +99,10 @@ export function CalendarView() {
 
                     <button
                         onClick={() => handleCreate()}
-                        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        className="flex w-full xs:w-auto items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-95 shadow-lg shadow-indigo-600/20"
                     >
                         <Plus className="w-4 h-4" />
-                        <span className="hidden sm:inline">Nuevo Contenido</span>
-                        <span className="sm:hidden">Nuevo</span>
+                        <span>Nuevo Item</span>
                     </button>
                 </div>
             </div>

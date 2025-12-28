@@ -11,6 +11,8 @@ interface ContentContextType {
     refreshContent: () => Promise<void>;
     openCreationModal: () => void;
     deleteAllContent: () => Promise<void>;
+    isSidebarOpen: boolean;
+    setSidebarOpen: (open: boolean) => void;
 }
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
@@ -19,6 +21,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<ContentItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
 
     const refreshContent = async () => {
         setIsLoading(true);
@@ -62,7 +65,15 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <ContentContext.Provider value={{ items, isLoading, refreshContent, openCreationModal, deleteAllContent }}>
+        <ContentContext.Provider value={{
+            items,
+            isLoading,
+            refreshContent,
+            openCreationModal,
+            deleteAllContent,
+            isSidebarOpen,
+            setSidebarOpen
+        }}>
             {children}
             <ContentModal
                 isOpen={isModalOpen}

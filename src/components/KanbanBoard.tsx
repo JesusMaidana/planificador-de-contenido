@@ -196,12 +196,12 @@ export function KanbanBoard() {
     };
 
     return (
-        <div className="h-full flex flex-col">
-            <div className="mb-6 flex items-center justify-between">
-                <h1 className="text-3xl font-bold text-white">Tablero Kanban</h1>
+        <div className="h-full flex flex-col overflow-hidden">
+            <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between shrink-0 gap-4">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">Tablero Kanban</h1>
                 <button
                     onClick={() => handleNew()}
-                    className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                    className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 active:scale-95 transition-all"
                 >
                     <Plus className="h-4 w-4" />
                     Nuevo Contenido
@@ -214,19 +214,24 @@ export function KanbanBoard() {
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
             >
-                <div className="flex h-full gap-4 overflow-x-auto pb-4">
+                <div className="flex h-full gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x lg:snap-none">
                     {STATUSES.map((status) => (
-                        <KanbanColumn
-                            key={status}
-                            status={status}
-                            items={items.filter(i => i.status === status)}
-                            onAdd={() => handleNew(status)}
-                            onEdit={handleEdit}
-                        />
+                        <div key={status} className="snap-center">
+                            <KanbanColumn
+                                status={status}
+                                items={items.filter(i => i.status === status)}
+                                onAdd={() => handleNew(status)}
+                                onEdit={handleEdit}
+                            />
+                        </div>
                     ))}
                 </div>
                 <DragOverlay>
-                    {activeItem ? <KanbanCard item={activeItem} onClick={() => { }} /> : null}
+                    {activeItem ? (
+                        <div className="w-[280px] rotate-3 scale-105 transition-transform">
+                            <KanbanCard item={activeItem} onClick={() => { }} />
+                        </div>
+                    ) : null}
                 </DragOverlay>
             </DndContext>
 
