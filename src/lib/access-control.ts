@@ -1,16 +1,26 @@
 import { createClient } from '@/lib/supabase/server'
 
 export async function isAdmin() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    try {
+        const supabase = await createClient()
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!user) return false
+        if (authError || !user) return false
 
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single()
 
-    return profile?.role === 'admin'
+        if (error) {
+            console.error('[isAdmin] Profiles Error:', error.message);
+            return false;
+        }
+
+        return profile?.role === 'admin'
+    } catch (e) {
+        console.error('[isAdmin] Unexpected Error:', e);
+        return false;
+    }
 }

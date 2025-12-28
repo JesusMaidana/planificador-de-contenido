@@ -42,19 +42,28 @@ export const authJson = {
 
     // Get current user (client-side)
     async getCurrentUser() {
-        const supabase = createClient()
-        const { data: { user } } = await supabase.auth.getUser()
+        try {
+            const supabase = createClient()
+            const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-        if (!user) return null
+            if (authError || !user) return null
 
-        // Fetch profile data including role
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single()
+            // Fetch profile data including role
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single()
 
-        return { ...user, profile }
+            if (error) {
+                console.error('[getCurrentUser] Profiles Error:', error.message);
+            }
+
+            return { ...user, profile }
+        } catch (e) {
+            console.error('[getCurrentUser] Unexpected Error:', e);
+            return null;
+        }
     },
 
 }
