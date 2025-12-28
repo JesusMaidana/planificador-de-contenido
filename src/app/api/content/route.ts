@@ -1,105 +1,105 @@
-import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
-import { ContentItem } from '@/types';
 import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
 
-const DB_PATH = path.join(process.cwd(), 'content-db.json');
 export const dynamic = 'force-dynamic';
 
-async function getDB(): Promise<ContentItem[]> {
-    try {
-        const data = await fs.readFile(DB_PATH, 'utf-8');
-        return JSON.parse(data);
-    } catch (error) {
-        return [];
-    }
-}
+/**
+ * API Route Handler for Content management.
+ * Migrated from JSON storage to Supabase to support Row Level Security (RLS).
+ * All methods (GET, POST, PUT, DELETE) use createServerClient with cookies
+ * to pass the user's session to Supabase.
+ */
 
-async function saveDB(data: ContentItem[]) {
-    await fs.writeFile(DB_PATH, JSON.stringify(data, null, 2));
-}
-
-// Helper to check authentication
-async function checkAuth() {
-    const supabase = await createClient();
-    const { data: { user }, error } = await supabase.auth.getUser();
-
-    if (error || !user) {
-        return { authenticated: false, user: null };
-    }
-
-    return { authenticated: true, user };
-}
-
+// GET: Fetch all content items accessible to the user
 export async function GET() {
-    const { authenticated } = await checkAuth();
+    const supabase = await createClient();
 
-    if (!authenticated) {
-        return NextResponse.json(
-            { error: 'Unauthorized. Please log in.' },
-            { status: 401 }
-        );
+    // Check authentication and get user session
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+        return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 });
     }
 
-    const data = await getDB();
+    // Fetch items - Supabase RLS will handle visibility (User vs Admin)
+    const { data, error } = await supabase
+        .from('content')
+        .select('*')
+        .order('targetDate', { ascending: false });
+
+    if (error) {
+        console.error('API GET Error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
     return NextResponse.json(data);
 }
 
+// POST: Create a new content item
 export async function POST(request: Request) {
-    const { authenticated } = await checkAuth();
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!authenticated) {
-        return NextResponse.json(
-            { error: 'Unauthorized. Please log in to create content.' },
-            { status: 401 }
-        );
+    if (authError || !user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const newItem = await request.json();
-    const db = await getDB();
-    // Simple ID generation if not provided
-    if (!newItem.id) {
-        newItem.id = Math.random().toString(36).substring(7);
+
+    // Ensure the item is linked to the current user for RLS
+    // and cleanup any incoming custom ID to let Supabase handle it (or use provided one)
+    const { data, error } = await supabase
+        .from('content')
+        .insert([{ ...newItem, user_id: user.id }])
+        .select()
+        .single();
+
+    if (error) {
+        console.error('API POST Error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
-    db.push(newItem);
-    await saveDB(db);
-    return NextResponse.json(newItem);
+
+    return NextResponse.json(data);
 }
 
-// PUT for updating an item
+// PUT: Update an existing content item
 export async function PUT(request: Request) {
-    const { authenticated } = await checkAuth();
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!authenticated) {
-        return NextResponse.json(
-            { error: 'Unauthorized. Please log in to update content.' },
-            { status: 401 }
-        );
+    if (authError || !user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const updatedItem = await request.json();
-    const db = await getDB();
-    const index = db.findIndex((item) => item.id === updatedItem.id);
+    const { id, user_id, ...updateData } = updatedItem; // Protection: don't allow changing ownership
 
-    if (index !== -1) {
-        db[index] = { ...db[index], ...updatedItem };
-        await saveDB(db);
-        return NextResponse.json(db[index]);
+    if (!id) {
+        return NextResponse.json({ error: 'ID required' }, { status: 400 });
     }
 
-    return NextResponse.json({ error: 'Item not found' }, { status: 404 });
+    // Attempt update - RLS will block if the user doesn't have permission for this record
+    const { data, error } = await supabase
+        .from('content')
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
+
+    if (error) {
+        console.error('API PUT Error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(data);
 }
 
-// DELETE for removing an item (using search params)
+// DELETE: Remove a specific item or all items
 export async function DELETE(request: Request) {
-    const { authenticated } = await checkAuth();
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!authenticated) {
-        return NextResponse.json(
-            { error: 'Unauthorized. Please log in to delete content.' },
-            { status: 401 }
-        );
+    if (authError || !user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -110,13 +110,29 @@ export async function DELETE(request: Request) {
     }
 
     if (id === 'all') {
-        await saveDB([]);
+        // Deletes everything the user has permission to delete according to RLS
+        const { error } = await supabase
+            .from('content')
+            .delete()
+            .neq('id', '00000000-0000-0000-0000-000000000000');
+
+        if (error) {
+            console.error('API DELETE ALL Error:', error);
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
         return NextResponse.json({ success: true });
     }
 
-    const db = await getDB();
-    const newDb = db.filter((item) => item.id !== id);
-    await saveDB(newDb);
+    // Single item deletion
+    const { error } = await supabase
+        .from('content')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        console.error('API DELETE Error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
 }
