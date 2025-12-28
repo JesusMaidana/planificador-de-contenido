@@ -62,14 +62,21 @@ export async function POST(request: Request) {
             .single();
 
         if (error) {
-            console.error('[API POST] Supabase Error:', error.message);
-            return NextResponse.json({ error: error.message }, { status: 400 });
+            console.error('[API POST] Supabase Error:', error);
+            return NextResponse.json({
+                supabaseError: error,
+                userId: user.id,
+                payload: body
+            }, { status: 400 });
         }
 
         return NextResponse.json(data);
-    } catch (e) {
+    } catch (e: any) {
         console.error('[API POST] Unexpected Error:', e);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Internal Server Error',
+            details: e?.message || e
+        }, { status: 500 });
     }
 }
 
